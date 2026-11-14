@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="panel-header" style="margin-bottom:1rem">
+  <div>
+    <h1>Engagement dashboard</h1>
+    {% if current_engagement %}
+    <p class="muted">{{ current_engagement.client.name }} — {{ current_engagement.name }} ({{ current_engagement.code }})</p>
+    {% else %}
+    <p class="muted">No engagement assigned. Ask an admin to grant access.</p>
+    {% endif %}
+  </div>
+  <a class="btn btn-primary" href="/vendors/new">Add vendor</a>
+</div>
+
+{% if current_engagement %}
+<div class="stat-row">
+  <div class="stat">
+    <div class="stat-label">Vendors</div>
+    <div class="stat-value">{{ vendor_count }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Open critical</div>
+    <div class="stat-value">{{ open_critical }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Grade A</div>
+    <div class="stat-value">{{ grade_counts.get('A', 0) }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Grade F</div>
+    <div class="stat-value">{{ grade_counts.get('F', 0) }}</div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header">
+    <h2>Vendors by grade</h2>
+    <a class="btn btn-secondary btn-sm" href="/vendors">View all</a>
+  </div>
+  {% if vendors %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Vendor</th>
+          <th>Domain</th>
+          <th>Criticality</th>
+          <th>Authorization</th>
+          <th>Score</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vendors %}
+        <tr>
+          <td><a href="/vendors/{{ v.id }}">{{ v.name }}</a></td>
+          <td class="muted">{{ v.primary_domain or "—" }}</td>
+          <td>{{ v.criticality.value }}</td>
+          <td><span class="auth-pill">{{ v.scan_authorization.value.replace('_', ' ') }}</span></td>
+          <td>{{ v.score if v.score is not none else "—" }}</td>
+          <td>
+            {% set g = v.grade or 'NA' %}
+            <span class="grade grade-{{ g }}" title="Grade {{ g }}">{{ g }}</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No vendors yet. Create one to begin.</div>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header">
+    <h2>Top critical / high findings</h2>
+  </div>
+  {% if top_findings %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Severity</th>
+          <th>Finding</th>
+          <th>Vendor</th>
+          <th>Asset</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in top_findings %}
+        <tr>
+          <td><span class="badge badge-{{ f.severity.value }}">{{ f.severity.value|capitalize }}</span></td>
+          <td><a href="/vendors/{{ f.vendor_id }}?tab=findings">{{ f.title }}</a></td>
+          <td>{{ f.vendor.name }}</td>
+          <td class="muted">{{ f.asset_value or "—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No open critical or high findings.</div>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

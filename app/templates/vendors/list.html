@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Vendors · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="panel-header">
+  <div>
+    <h1>Vendors</h1>
+    <p class="muted">Third parties in {{ current_engagement.name }}</p>
+  </div>
+  <a class="btn btn-primary" href="/vendors/new">Add vendor</a>
+</div>
+
+<form class="filters" method="get" action="/vendors">
+  <div class="form-group">
+    <label for="q">Search</label>
+    <input class="form-control" type="search" id="q" name="q" value="{{ q }}" placeholder="Name or domain">
+  </div>
+  <div class="form-group">
+    <label for="grade">Grade</label>
+    <select class="form-control" id="grade" name="grade">
+      <option value="">All</option>
+      {% for g in ['A','B','C','D','F'] %}
+      <option value="{{ g }}" {% if grade == g %}selected{% endif %}>{{ g }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="criticality">Criticality</label>
+    <select class="form-control" id="criticality" name="criticality">
+      <option value="">All</option>
+      {% for c in VendorCriticality %}
+      <option value="{{ c.value }}" {% if criticality == c.value %}selected{% endif %}>{{ c.value }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+<div class="panel">
+  {% if vendors %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Vendor</th>
+          <th>Primary domain</th>
+          <th>Criticality</th>
+          <th>Data access</th>
+          <th>Scan auth</th>
+          <th>Score</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vendors %}
+        <tr>
+          <td><a href="/vendors/{{ v.id }}">{{ v.name }}</a></td>
+          <td>{{ v.primary_domain or "—" }}</td>
+          <td>{{ v.criticality.value }}</td>
+          <td>{{ v.data_access.value.replace('_', ' ') }}</td>
+          <td><span class="auth-pill">{{ v.scan_authorization.value.replace('_', ' ') }}</span></td>
+          <td>{{ v.score if v.score is not none else "—" }}</td>
+          <td>
+            {% set g = v.grade or 'NA' %}
+            <span class="grade grade-{{ g }}">{{ g }}</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No vendors match your filters.</div>
+  {% endif %}
+</div>
+{% endblock %}

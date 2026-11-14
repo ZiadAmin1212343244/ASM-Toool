@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% block title %}{{ vendor.name }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="panel-header">
+  <div>
+    <h1>{{ vendor.name }}</h1>
+    <p class="muted">
+      {{ vendor.primary_domain or "No primary domain" }}
+      · {{ vendor.criticality.value }} criticality
+      · data access: {{ vendor.data_access.value.replace('_', ' ') }}
+    </p>
+  </div>
+  <div style="display:flex;gap:0.5rem;align-items:center">
+    {% set g = vendor.grade or 'NA' %}
+    <span class="grade grade-{{ g }}" title="Grade">{{ g }}</span>
+    <span class="stat-value" style="font-size:1.4rem">{{ vendor.score if vendor.score is not none else "—" }}</span>
+    <button type="button" class="btn btn-primary" disabled title="Available in Phase 3">Scan</button>
+    <button type="button" class="btn btn-secondary" disabled title="Available in Phase 3">Re-scan</button>
+  </div>
+</div>
+
+<nav class="tabs" aria-label="Vendor sections">
+  {% set tabs = [
+    ('overview', 'Overview'),
+    ('assets', 'Assets'),
+    ('findings', 'Findings'),
+    ('leaks', 'Leaks & dark web'),
+    ('code', 'Code leaks'),
+    ('lookalikes', 'Lookalikes'),
+    ('fourth', 'Fourth parties'),
+    ('evidence', 'Evidence'),
+    ('claims', 'Claims vs reality'),
+    ('history', 'Scan history'),
+    ('audit', 'Audit'),
+  ] %}
+  {% for key, label in tabs %}
+  <a href="/vendors/{{ vendor.id }}?tab={{ key }}" class="{% if tab == key %}active{% endif %}">{{ label }}</a>
+  {% endfor %}
+</nav>
+
+{% if tab == 'overview' %}
+<div class="stat-row">
+  <div class="stat">
+    <div class="stat-label">Open findings</div>
+    <div class="stat-value">{{ open_findings|length }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Declared assets</div>
+    <div class="stat-value">{{ declared_assets|length }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Discovered assets</div>
+    <div class="stat-value">{{ discovered_assets|length }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Evidence items</div>
+    <div class="stat-value">{{ evidence_list|length }}</div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Scan authorization</h2>
+  <p>
+    Current level: <span class="auth-pill">{{ vendor.scan_authorization.value.replace('_', ' ') }}</span>
+    {% if vendor.authorization_approved %}
+    · approved
+    {% else %}
+    · <span class="muted">not raised above passive (letter approval required)</span>
+    {% endif %}
+  </p>
+  <p class="muted">Passive by default. Engagement leads can raise authorization after an authorization letter is uploaded (Phase 2).</p>
+</div>
+
+<div class="panel">
+  <div class="panel-header"><h2>Highest open findings</h2></div>
+  {% if open_findings[:5] %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Severity</th><th>Title</th><th>Module</th><th>Confidence</th></tr></thead>
+      <tbody>
+        {% for f in open_findings[:5] %}
+        <tr>
+          <td><span class="badge badge-{{ f.severity.value }}">{{ f.severity.value|capitalize }}</span></td>
+          <td>{{ f.title }}</td>
+          <td class="muted">{{ f.module.value.replace('_', ' ') }}</td>
+          <td>{{ '%.0f'|format(f.confidence * 100) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No open findings.</div>
+  {% endif %}
+</div>
+
+{% elif tab == 'assets' %}
+<div class="panel">
+  <div class="panel-header"><h2>Declared assets</h2></div>
+  {% if declared_assets %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Type</th><th>Value</th><th>Resolves</th><th>Confidence</th></tr></thead>
+      <tbody>
+        {% for a in declared_assets %}
+        <tr>
+          <td>{{ a.asset_type.value }}</td>
+          <td>{{ a.value }}</td>
+          <td>{% if a.resolves is none %}—{% elif a.resolves %}Yes{% else %}No{% endif %}</td>
+          <td>{{ '%.0f'|format(a.attribution_confidence * 100) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No declared assets. Upload an intake template in Phase 2.</div>
+  {% endif %}
+</div>
+<div class="panel">
+  <div class="panel-header"><h2>Discovered assets (shadow IT)</h2></div>
+  {% if discovered_assets %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Type</th><th>Value</th><th>Review</th><th>Confidence</th></tr></thead>
+      <tbody>
+        {% for a in discovered_assets %}
+        <tr>
+          <td>{{ a.asset_type.value }}</td>
+          <td>{{ a.value }}</td>
+          <td>{{ a.review_status.value.replace('_', ' ') }}</td>
+          <td>{{ '%.0f'|format(a.attribution_confidence * 100) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No discovered assets yet. Run discovery in Phase 3.</div>
+  {% endif %}
+</div>
+
+{% elif tab == 'findings' %}
+<div class="panel">
+  <div class="panel-header"><h2>Findings</h2></div>
+  {% if all_findings %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>Severity</th><th>Title</th><th>Status</th><th>Module</th><th>Asset</th><th>Confidence</th></tr>
+      </thead>
+      <tbody>
+        {% for f in all_findings %}
+        <tr>
+          <td><span class="badge badge-{{ f.severity.value }}">{{ f.severity.value|capitalize }}</span></td>
+          <td>
+            <strong>{{ f.title }}</strong>
+            {% if f.description %}<div class="muted">{{ f.description }}</div>{% endif %}
+          </td>
+          <td>{{ f.status.value.replace('_', ' ') }}</td>
+          <td class="muted">{{ f.module.value.replace('_', ' ') }}</td>
+          <td>{{ f.asset_value or "—" }}</td>
+          <td>{{ '%.0f'|format(f.confidence * 100) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No findings for this vendor.</div>
+  {% endif %}
+</div>
+
+{% elif tab == 'evidence' %}
+<div class="panel">
+  <div class="panel-header">
+    <h2>Evidence vault</h2>
+    <span class="muted">Upload arrives in Phase 2</span>
+  </div>
+  {% if evidence_list %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Type</th><th>Title</th><th>Issuer</th><th>Issued</th><th>Expires</th><th>Flags</th></tr></thead>
+      <tbody>
+        {% for e in evidence_list %}
+        <tr>
+          <td>{{ e.evidence_type.value }}</td>
+          <td>{{ e.title }}</td>
+          <td>{{ e.issuer or "—" }}</td>
+          <td>{{ e.issue_date or "—" }}</td>
+          <td>{{ e.expiry_date or "—" }}</td>
+          <td>
+            {% if e.expiry_date and e.expiry_date < today %}
+            <span class="badge badge-high">Expired</span>
+            {% elif e.expiry_date and e.expiry_date <= soon %}
+            <span class="badge badge-medium">Expiring soon</span>
+            {% endif %}
+            {% if not e.in_scope %}
+            <span class="badge badge-info">Out of scope</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No evidence uploaded yet.</div>
+  {% endif %}
+</div>
+
+{% elif tab == 'history' %}
+<div class="panel">
+  <div class="panel-header"><h2>Scan history</h2></div>
+  {% if scan_runs %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>ID</th><th>Profile</th><th>Status</th><th>Started</th><th>Finished</th></tr></thead>
+      <tbody>
+        {% for s in scan_runs %}
+        <tr>
+          <td>#{{ s.id }}</td>
+          <td>{{ s.profile.value }}</td>
+          <td>{{ s.status.value }}</td>
+          <td>{{ s.started_at or "—" }}</td>
+          <td>{{ s.finished_at or "—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No scans yet. Scan orchestration lands in Phase 3.</div>
+  {% endif %}
+</div>
+
+{% elif tab == 'audit' %}
+<div class="panel">
+  <div class="panel-header"><h2>Vendor audit trail</h2></div>
+  {% if audit_entries %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>When</th><th>Action</th><th>Detail</th></tr></thead>
+      <tbody>
+        {% for a in audit_entries %}
+        <tr>
+          <td>{{ a.created_at }}</td>
+          <td>{{ a.action }}</td>
+          <td class="muted">{{ a.detail or "—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No audit entries for this vendor yet.</div>
+  {% endif %}
+</div>
+
+{% elif tab in ['leaks', 'code', 'lookalikes', 'fourth', 'claims'] %}
+<div class="panel">
+  <h2>{{ tab|replace('_', ' ')|capitalize }}</h2>
+  <p class="muted">This panel is wired for Phase {% if tab in ['leaks','code','lookalikes'] %}5{% elif tab == 'fourth' or tab == 'claims' %}6{% else %}4{% endif %}. Seed data may still show related findings under Findings.</p>
+</div>
+{% endif %}
+{% endblock %}

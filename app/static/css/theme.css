@@ -1,0 +1,491 @@
+/* PwC theme — all brand colors live here as CSS variables. Do not hardcode elsewhere. */
+
+:root {
+  --pwc-orange: #FD5108;
+  --pwc-orange-hover: #E04807;
+  --pwc-black: #000000;
+  --pwc-white: #FFFFFF;
+  --pwc-grey-900: #2D2D2D;
+  --pwc-grey-600: #7D7D7D;
+  --pwc-grey-300: #DEDEDE;
+  --pwc-grey-100: #F5F5F5;
+
+  --severity-critical: #7A0019;
+  --severity-high: #C62828;
+  --severity-medium: #F2B705;
+  --severity-low: #5B7083;
+  --severity-info: #9E9E9E;
+
+  --grade-a: #1B7A3D;
+  --grade-b: #4C9A2A;
+  --grade-c: #F2B705;
+  --grade-d: #C62828;
+  --grade-f: #7A0019;
+  --grade-na: #7D7D7D;
+
+  --font-ui: Helvetica, Arial, sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
+
+  --radius: 4px;
+  --sidebar-width: 220px;
+  --topbar-height: 56px;
+  --footer-height: 36px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--pwc-black);
+  background: var(--pwc-grey-100);
+}
+
+a {
+  color: var(--pwc-black);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--pwc-orange);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  margin: 0 0 0.5rem;
+  color: var(--pwc-black);
+}
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+
+p { margin: 0 0 0.75rem; color: var(--pwc-grey-900); }
+
+/* Layout */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: var(--topbar-height);
+  background: var(--pwc-white);
+  border-bottom: 1px solid var(--pwc-grey-300);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar-logo {
+  height: 28px;
+  width: auto;
+}
+
+.topbar-logo-fallback {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--pwc-orange);
+  letter-spacing: 0.02em;
+}
+
+.topbar-app-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--pwc-black);
+  border-left: 1px solid var(--pwc-grey-300);
+  padding-left: 0.75rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.engagement-switcher select {
+  border: 1px solid var(--pwc-grey-300);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.5rem;
+  font-family: var(--font-ui);
+  background: var(--pwc-white);
+}
+
+.user-menu {
+  color: var(--pwc-grey-900);
+  font-size: 0.85rem;
+}
+
+.body-row {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--pwc-white);
+  border-right: 1px solid var(--pwc-grey-300);
+  padding: 1rem 0;
+  flex-shrink: 0;
+}
+
+.sidebar a {
+  display: block;
+  padding: 0.55rem 1.25rem;
+  color: var(--pwc-grey-900);
+  border-left: 3px solid transparent;
+  font-size: 0.9rem;
+}
+
+.sidebar a:hover {
+  background: var(--pwc-grey-100);
+  color: var(--pwc-black);
+}
+
+.sidebar a.active {
+  border-left-color: var(--pwc-orange);
+  color: var(--pwc-black);
+  font-weight: 600;
+  background: var(--pwc-grey-100);
+}
+
+.main {
+  flex: 1;
+  padding: 1.5rem;
+  overflow: auto;
+}
+
+.footer-banner {
+  height: var(--footer-height);
+  background: var(--pwc-black);
+  color: var(--pwc-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+/* Cards — used only as interactive/content containers */
+.panel {
+  background: var(--pwc-white);
+  border: 1px solid var(--pwc-grey-300);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  background: var(--pwc-white);
+  border: 1px solid var(--pwc-grey-300);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--pwc-grey-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  margin-top: 0.25rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: var(--pwc-grey-100);
+  color: var(--pwc-black);
+}
+
+.btn:hover { filter: brightness(0.97); }
+
+.btn-primary {
+  background: var(--pwc-orange);
+  color: var(--pwc-white);
+  border-color: var(--pwc-orange);
+}
+.btn-primary:hover {
+  background: var(--pwc-orange-hover);
+  color: var(--pwc-white);
+}
+
+.btn-secondary {
+  background: var(--pwc-white);
+  border-color: var(--pwc-grey-300);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.8rem;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 0.9rem;
+}
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--pwc-grey-900);
+}
+.form-control {
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid var(--pwc-grey-300);
+  border-radius: var(--radius);
+  padding: 0.45rem 0.6rem;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  background: var(--pwc-white);
+}
+.form-control:focus {
+  outline: 2px solid var(--pwc-orange);
+  outline-offset: 1px;
+}
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.form-error {
+  background: #FDECEA;
+  border: 1px solid var(--severity-high);
+  color: var(--severity-critical);
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--pwc-white);
+}
+table.data th,
+table.data td {
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--pwc-grey-300);
+  vertical-align: top;
+}
+table.data th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pwc-grey-600);
+  background: var(--pwc-grey-100);
+  font-weight: 600;
+}
+table.data tr:hover td {
+  background: #FAFAFA;
+}
+
+/* Badges / labels — severity always with text label */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--pwc-white);
+}
+.badge-critical { background: var(--severity-critical); }
+.badge-high { background: var(--severity-high); }
+.badge-medium { background: var(--severity-medium); color: var(--pwc-black); }
+.badge-low { background: var(--severity-low); }
+.badge-info { background: var(--severity-info); color: var(--pwc-black); }
+
+.grade {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--pwc-white);
+}
+.grade-A { background: var(--grade-a); }
+.grade-B { background: var(--grade-b); }
+.grade-C { background: var(--grade-c); color: var(--pwc-black); }
+.grade-D { background: var(--grade-d); }
+.grade-F { background: var(--grade-f); }
+.grade-NA { background: var(--grade-na); font-size: 0.7rem; }
+
+.auth-pill {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  background: var(--pwc-grey-100);
+  border: 1px solid var(--pwc-grey-300);
+  color: var(--pwc-grey-900);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 1px solid var(--pwc-grey-300);
+  margin-bottom: 1rem;
+}
+.tabs a {
+  padding: 0.6rem 0.9rem;
+  color: var(--pwc-grey-600);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  font-size: 0.875rem;
+}
+.tabs a:hover { color: var(--pwc-black); }
+.tabs a.active {
+  color: var(--pwc-black);
+  border-bottom-color: var(--pwc-orange);
+  font-weight: 600;
+}
+
+.muted { color: var(--pwc-grey-600); }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+/* Login page */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(135deg, var(--pwc-grey-100) 0%, var(--pwc-white) 45%, #FFF4EE 100%);
+}
+.login-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.login-box {
+  width: 100%;
+  max-width: 400px;
+  background: var(--pwc-white);
+  border: 1px solid var(--pwc-grey-300);
+  border-radius: var(--radius);
+  padding: 2rem;
+}
+.login-brand {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.login-brand .topbar-logo-fallback {
+  font-size: 2rem;
+}
+.login-brand h1 {
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+.filters .form-group { margin: 0; }
+.filters .form-control { max-width: 200px; }
+
+.empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--pwc-grey-600);
+}
+
+@media (max-width: 800px) {
+  .body-row { flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--pwc-grey-300);
+    padding: 0.5rem;
+  }
+  .sidebar a {
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+  }
+  .sidebar a.active {
+    border-bottom-color: var(--pwc-orange);
+  }
+  .topbar-app-name { display: none; }
+}
