@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Sign in · {{ app_name }}{% endblock %}
+{% block body %}
+<div class="login-page">
+  <div class="login-center">
+    <div class="login-box">
+      <div class="login-brand">
+        <img class="topbar-logo" src="/static/brand/logo.svg" alt="PwC"
+             style="height:36px"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
+        <span class="topbar-logo-fallback" style="display:none">PwC</span>
+        <h1>{{ app_name }}</h1>
+        <p class="muted">Analyst sign-in · local accounts</p>
+      </div>
+
+      {% if error %}
+      <div class="form-error" role="alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="/login">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input class="form-control" type="email" id="email" name="email" required autocomplete="username"
+                 value="analyst@pwc.local">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input class="form-control" type="password" id="password" name="password" required autocomplete="current-password"
+                 value="ChangeMe123!">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" style="width:100%">Sign in</button>
+        </div>
+      </form>
+      <p class="muted" style="margin-top:1.25rem;font-size:0.8rem">
+        Demo: analyst@pwc.local / ChangeMe123!<br>
+        Lead: lead@pwc.local / ChangeMe123!
+      </p>
+    </div>
+  </div>
+  <footer class="footer-banner">Internal use only – PwC Confidential</footer>
+</div>
+{% endblock %}

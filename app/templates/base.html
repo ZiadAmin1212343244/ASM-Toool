@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+{% if user is defined and user %}
+<div class="app-shell">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <a href="/" class="topbar-brand" style="gap:0.75rem">
+        <img class="topbar-logo" src="/static/brand/logo.svg" alt="PwC"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
+        <span class="topbar-logo-fallback" style="display:none">PwC</span>
+        <span class="topbar-app-name">{{ app_name }}</span>
+      </a>
+    </div>
+    <div class="topbar-actions">
+      {% if engagements is defined and engagements %}
+      <form class="engagement-switcher" method="post" action="/engagement/switch">
+        <label class="sr-only" for="engagement_id">Engagement</label>
+        <select id="engagement_id" name="engagement_id" onchange="this.form.submit()">
+          {% for e in engagements %}
+          <option value="{{ e.id }}" {% if current_engagement and e.id == current_engagement.id %}selected{% endif %}>
+            {{ e.client.name }} — {{ e.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </form>
+      {% endif %}
+      <div class="user-menu">
+        {{ user.full_name }} · {{ user.role.value.replace('_', ' ') }}
+        <form method="post" action="/logout" style="display:inline;margin-left:0.5rem">
+          <button type="submit" class="btn btn-ghost btn-sm">Sign out</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <div class="body-row">
+    <nav class="sidebar" aria-label="Main">
+      <a href="/" class="{% if active_nav == 'dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="/vendors" class="{% if active_nav == 'vendors' %}active{% endif %}">Vendors</a>
+      <a href="/vendors" class="{% if active_nav == 'findings' %}active{% endif %}">Findings</a>
+      <a href="/" class="{% if active_nav == 'assets' %}active{% endif %}">Asset review</a>
+      <a href="/" class="{% if active_nav == 'reports' %}active{% endif %}">Reports</a>
+      <a href="/" class="{% if active_nav == 'settings' %}active{% endif %}">Settings</a>
+    </nav>
+    <main class="main">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <footer class="footer-banner">Internal use only – PwC Confidential</footer>
+</div>
+{% else %}
+  {% block body %}{% endblock %}
+{% endif %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

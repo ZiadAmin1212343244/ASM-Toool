@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}New vendor · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="panel-header">
+  <div>
+    <h1>Add vendor</h1>
+    <p class="muted">Vendors never log in — analysts create records after receiving intake materials.</p>
+  </div>
+</div>
+
+<div class="panel">
+  <form method="post" action="/vendors/new">
+    <div class="form-group">
+      <label for="name">Vendor name</label>
+      <input class="form-control" id="name" name="name" required maxlength="255">
+    </div>
+    <div class="form-group">
+      <label for="primary_domain">Primary domain</label>
+      <input class="form-control" id="primary_domain" name="primary_domain" placeholder="example.com">
+    </div>
+    <div class="form-group">
+      <label for="criticality">Business criticality</label>
+      <select class="form-control" id="criticality" name="criticality">
+        {% for c in VendorCriticality %}
+        <option value="{{ c.value }}" {% if c.value == 'medium' %}selected{% endif %}>{{ c.value }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="data_access">Data access level</label>
+      <select class="form-control" id="data_access" name="data_access">
+        {% for d in DataAccessLevel %}
+        <option value="{{ d.value }}" {% if d.value == 'limited' %}selected{% endif %}>{{ d.value.replace('_', ' ') }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="notes">Notes</label>
+      <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+    </div>
+    <p class="muted">Scan authorization defaults to <strong>passive only</strong>. Raise it only after an authorization letter is uploaded and approved by an engagement lead.</p>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Create vendor</button>
+      <a class="btn btn-secondary" href="/vendors">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
